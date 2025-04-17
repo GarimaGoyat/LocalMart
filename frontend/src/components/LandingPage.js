@@ -9,9 +9,19 @@ const LandingPage = () => {
     { id: 2, name: "Special Chai Mix", price: "₹150", shop: "Canteen", verified: false, category: "Food" },
     { id: 3, name: "Wireless Mouse", price: "₹500", shop: "Electronics Hub", verified: true, category: "Electronics" },
     { id: 4, name: "Organic Vegetables", price: "₹200", shop: "Farmers Market", verified: false, category: "Farmers" },
+    { id: 5, name: "Notebook", price: "₹50", shop: "Stationery World", verified: true, category: "Stationery" },
+    { id: 6, name: "Bluetooth Speaker", price: "₹1200", shop: "Electronics Hub", verified: true, category: "Electronics" },
+    { id: 7, name: "Handmade Pottery", price: "₹300", shop: "Artisan Crafts", verified: false, category: "Home Decor" },
+    { id: 8, name: "Leather Wallet", price: "₹800", shop: "Accessories Store", verified: true, category: "Accessories" },
+    { id: 9, name: "Sports Shoes", price: "₹2500", shop: "Sports World", verified: true, category: "Clothing" },
+    { id: 10, name: "Organic Honey", price: "₹400", shop: "Farmers Market", verified: false, category: "Food" },
+    { id: 11, name: "Desk Lamp", price: "₹700", shop: "Home Essentials", verified: true, category: "Home Decor" },
+    { id: 12, name: "Drawing Kit", price: "₹350", shop: "Stationery World", verified: true, category: "Stationery" },
+    { id: 13, name: "Gaming Keyboard", price: "₹2500", shop: "Electronics Hub", verified: true, category: "Electronics" },
+    { id: 14, name: "Travel Backpack", price: "₹1500", shop: "Accessories Store", verified: true, category: "Accessories" },
   ];
 
-  const categories = ["All", "Food", "Electronics", "Farmers", "Clothing", "Stationery"];
+  const categories = ["All", "Food", "Electronics", "Farmers", "Clothing", "Stationery", "Home Decor", "Accessories"];
 
   const filteredProducts = selectedCategory === "All"
     ? products

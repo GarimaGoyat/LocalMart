@@ -2,6 +2,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .landing-page {
@@ -80,14 +81,16 @@ body {
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px 20px; /* Adjusted padding for a rectangular shape */
   text-align: center;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 20px 0;
+  margin: 10px 0; /* Reduced margin */
+  width: 90%; /* Adjusted width */
+  max-width: 600px;
 }
 
 .welcome-box:hover {
@@ -116,14 +119,16 @@ body {
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px 20px; /* Adjusted padding for a rectangular shape */
   text-align: center;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 20px 0;
+  margin: 10px 0; /* Reduced margin */
+  width: 90%; /* Adjusted width */
+  max-width: 600px;
 }
 
 .verified-box:hover {
@@ -178,7 +183,7 @@ body {
 /* Product Grid */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, 1fr); /* 4 products per row */
   gap: 20px;
   width: 100%;
   max-width: 1200px;
