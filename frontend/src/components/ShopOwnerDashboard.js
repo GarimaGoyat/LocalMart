@@ -11,6 +11,23 @@ const ShopOwnerDashboard = () => {
     { name: "Logout", icon: "🚪" },
   ];
 
+  const products = [
+    {
+      id: 1,
+      image: "placeholder.png",
+      name: "Product 1",
+      category: "Category A",
+      price: "$10",
+    },
+    {
+      id: 2,
+      image: "placeholder.png",
+      name: "Product 2",
+      category: "Category B",
+      price: "$20",
+    },
+  ];
+
   return (
     <div className="dashboard-container">
       {/* Sidebar */}
@@ -36,8 +53,45 @@ const ShopOwnerDashboard = () => {
           <span className="greeting">Hello, ShopOwner</span>
         </div>
         <div className="content">
-          <h2>{selectedMenu}</h2>
-          <p>Content for {selectedMenu} will go here.</p>
+          {selectedMenu === "Products" && (
+            <>
+              <div className="dashboard-header">
+                <h2>Products</h2>
+                <button className="add-product-btn">+ Add Product</button>
+              </div>
+              <table className="product-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((product) => (
+                    <tr key={product.id}>
+                      <td>
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="product-image"
+                        />
+                      </td>
+                      <td>{product.name}</td>
+                      <td>{product.category}</td>
+                      <td>{product.price}</td>
+                      <td>
+                        <span className="action-icon">✏️</span>
+                        <span className="action-icon">🗑️</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
         </div>
       </div>
     </div>
