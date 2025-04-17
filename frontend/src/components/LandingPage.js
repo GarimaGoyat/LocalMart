@@ -3,6 +3,7 @@ import "./LandingPage.css";
 
 const LandingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const products = [
     { id: 1, name: "Campus T-Shirt", price: "₹0", shop: "Campus Store", verified: true, category: "Clothing" },
@@ -23,13 +24,19 @@ const LandingPage = () => {
 
   const categories = ["All", "Food", "Electronics", "Farmers", "Clothing", "Stationery", "Home Decor", "Accessories"];
 
-  const filteredProducts = selectedCategory === "All"
-    ? products
-    : products.filter(product => product.category === selectedCategory);
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const handleProductClick = (productId) => {
     console.log(`Product clicked: ${productId}`);
     // Add navigation or other logic here
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
   const handleWelcomeBoxClick = () => {
@@ -56,6 +63,8 @@ const LandingPage = () => {
               type="text"
               className="search-bar"
               placeholder="Search products, shops..."
+              value={searchQuery}
+              onChange={handleSearchChange}
             />
           </div>
         </div>

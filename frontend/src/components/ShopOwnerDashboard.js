@@ -2,40 +2,26 @@ import React, { useState } from "react";
 import "./ShopOwnerDashboard.css";
 
 const ShopOwnerDashboard = () => {
-  const [selectedMenu, setSelectedMenu] = useState("Products");
-
-  const menuItems = [
-    { name: "Products", icon: "📦" },
-    { name: "Shop Details", icon: "🏪" },
-    { name: "Request Verification", icon: "✅" },
-    { name: "Logout", icon: "🚪" },
-  ];
+  const [searchQuery, setSearchQuery] = useState("");
 
   const products = [
-    {
-      id: 1,
-      image: "placeholder.png",
-      name: "Product 1",
-      category: "Category A",
-      price: "$10",
-    },
-    {
-      id: 2,
-      image: "placeholder.png",
-      name: "Product 2",
-      category: "Category B",
-      price: "$20",
-    },
+    { id: 1, name: "Campus T-Shirt", price: "₹500", type: "Clothing", quantity: 20 },
+    { id: 2, name: "Special Chai Mix", price: "₹150", type: "Food", quantity: 50 },
+    { id: 3, name: "Wireless Mouse", price: "₹800", type: "Electronics", quantity: 15 },
+    { id: 4, name: "Organic Vegetables", price: "₹200", type: "Farmers", quantity: 30 },
+    { id: 5, name: "Notebook", price: "₹50", type: "Stationery", quantity: 100 },
+    { id: 6, name: "Bluetooth Speaker", price: "₹1200", type: "Electronics", quantity: 10 },
+    { id: 7, name: "Handmade Pottery", price: "₹300", type: "Home Decor", quantity: 25 },
+    { id: 8, name: "Leather Wallet", price: "₹800", type: "Accessories", quantity: 40 },
   ];
 
-  const handleEdit = (id) => {
-    console.log(`Edit product with ID: ${id}`);
-    // Add your edit logic here
-  };
+  // Filter products based on the search query
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const handleDelete = (id) => {
-    console.log(`Delete product with ID: ${id}`);
-    // Add your delete logic here
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
   return (
@@ -44,16 +30,22 @@ const ShopOwnerDashboard = () => {
       <div className="sidebar">
         <div className="logo">LocalMart</div>
         <ul className="menu">
-          {menuItems.map((item) => (
-            <li
-              key={item.name}
-              className={`menu-item ${selectedMenu === item.name ? "active" : ""}`}
-              onClick={() => setSelectedMenu(item.name)}
-            >
-              <span className="icon">{item.icon}</span>
-              <span className="text">{item.name}</span>
-            </li>
-          ))}
+          <li className="menu-item active">
+            <span className="icon">📦</span>
+            <span className="text">Products</span>
+          </li>
+          <li className="menu-item">
+            <span className="icon">🏪</span>
+            <span className="text">Shop Details</span>
+          </li>
+          <li className="menu-item">
+            <span className="icon">✅</span>
+            <span className="text">Request Verification</span>
+          </li>
+          <li className="menu-item">
+            <span className="icon">🚪</span>
+            <span className="text">Logout</span>
+          </li>
         </ul>
       </div>
 
@@ -62,59 +54,57 @@ const ShopOwnerDashboard = () => {
         <div className="top-bar">
           <span className="greeting">Hello, ShopOwner</span>
         </div>
-        <div className="content">
-          {selectedMenu === "Products" && (
-            <>
-              <div className="dashboard-header">
-                <h2>Products</h2>
-                <button className="add-product-btn">+ Add Product</button>
-              </div>
-              <table className="product-table">
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product) => (
-                    <tr key={product.id}>
-                      <td>
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="product-image"
-                        />
-                      </td>
-                      <td>{product.name}</td>
-                      <td>{product.category}</td>
-                      <td>{product.price}</td>
-                      <td>
-                        <div className="action-buttons">
-                          <button
-                            className="icon-button"
-                            onClick={() => handleEdit(product.id)}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            className="icon-button"
-                            onClick={() => handleDelete(product.id)}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
+
+        {/* Dashboard Header */}
+        <div className="dashboard-header">
+          <h2>Products</h2>
+          <button className="add-product-btn">+ Add Product</button>
         </div>
+
+        {/* Search Bar */}
+        <div className="search-bar-container">
+          <span className="search-icon">🔍</span>
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Search your products..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
+        </div>
+
+        {/* Product Table */}
+        <table className="product-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product Name</th>
+              <th>Type</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredProducts.map((product) => (
+              <tr key={product.id}>
+                <td>
+                  <div className="product-image">📷</div>
+                </td>
+                <td>{product.name}</td>
+                <td>{product.type}</td>
+                <td>{product.price}</td>
+                <td>{product.quantity}</td>
+                <td>
+                  <div className="action-buttons">
+                    <button className="icon-button">✏️</button>
+                    <button className="icon-button">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
