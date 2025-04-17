@@ -28,6 +28,16 @@ const ShopOwnerDashboard = () => {
     },
   ];
 
+  const handleEdit = (id) => {
+    console.log(`Edit product with ID: ${id}`);
+    // Add your edit logic here
+  };
+
+  const handleDelete = (id) => {
+    console.log(`Delete product with ID: ${id}`);
+    // Add your delete logic here
+  };
+
   return (
     <div className="dashboard-container">
       {/* Sidebar */}
@@ -83,8 +93,20 @@ const ShopOwnerDashboard = () => {
                       <td>{product.category}</td>
                       <td>{product.price}</td>
                       <td>
-                        <span className="action-icon">✏️</span>
-                        <span className="action-icon">🗑️</span>
+                        <div className="action-buttons">
+                          <button
+                            className="icon-button"
+                            onClick={() => handleEdit(product.id)}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            className="icon-button"
+                            onClick={() => handleDelete(product.id)}
+                          >
+                            🗑️
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
