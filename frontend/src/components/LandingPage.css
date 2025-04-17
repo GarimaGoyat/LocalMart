@@ -1,6 +1,7 @@
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 .landing-page {
@@ -27,11 +28,37 @@ body {
   color: white;
 }
 
-.navbar-center .search-bar {
-  width: 300px;
-  padding: 8px;
-  border: 1px solid #ccc;
+/* Search Bar Container */
+.search-bar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Search Icon */
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: #007bff; /* Blue color */
+  font-size: 16px;
+  pointer-events: none; /* Prevent interaction with the icon */
+}
+
+/* Search Bar */
+.search-bar {
+  width: 100%;
+  padding: 10px 10px 10px 30px; /* Add left padding to make space for the icon */
+  border: 1px solid #ddd;
   border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.search-bar:focus {
+  border-color: #007bff;
 }
 
 .navbar-right .auth-btn {
@@ -50,14 +77,22 @@ body {
 
 /* Welcome Box Styles */
 .welcome-box {
-  margin: 20px 0;
-  padding: 20px;
-  width: 90%;
-  max-width: 800px;
-  background-color: #f8f9fa;
+  background: white;
+  border: 1px solid #ddd;
   border-radius: 8px;
+  padding: 16px;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.welcome-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .welcome-box .emoji {
@@ -78,14 +113,22 @@ body {
 
 /* Verified Sellers Box Styles */
 .verified-box {
-  margin: 20px 0;
-  padding: 20px;
-  width: 90%;
-  max-width: 800px;
-  background-color: #e6f7ff;
+  background: white;
+  border: 1px solid #ddd;
   border-radius: 8px;
+  padding: 16px;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.verified-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .verified-box .emoji {
@@ -110,58 +153,75 @@ body {
   display: flex;
   overflow-x: auto;
   padding: 10px;
-  background-color: #f1f1f1;
-  width: 100%;
 }
 
 .category-btn {
-  margin: 0 5px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  background-color: #e0e0e0;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 8px 16px;
+  margin-right: 10px;
   cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .category-btn.active {
-  background-color: #007bff;
+  background: #007bff;
+  color: white;
+}
+
+.category-btn:hover {
+  background: #0056b3;
   color: white;
 }
 
 /* Product Grid */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
-  padding: 20px;
   width: 100%;
   max-width: 1200px;
+  padding: 20px;
 }
 
 .product-card {
-  border: 1px solid #ccc;
+  background: white;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
   text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.product-image img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.product-info {
-  padding: 10px;
+.product-card img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.product-card h3 {
+  margin: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.product-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
 }
 
 .verified-badge {
-  display: inline-block;
-  margin-top: 5px;
-  padding: 2px 6px;
-  background-color: #28a745;
-  color: white;
-  border-radius: 4px;
-  font-size: 12px;
+  color: #28a745;
+  font-size: 14px;
+  font-weight: bold;
 }

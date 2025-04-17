@@ -17,6 +17,21 @@ const LandingPage = () => {
     ? products
     : products.filter(product => product.category === selectedCategory);
 
+  const handleProductClick = (productId) => {
+    console.log(`Product clicked: ${productId}`);
+    // Add navigation or other logic here
+  };
+
+  const handleWelcomeBoxClick = () => {
+    console.log("Welcome Box clicked");
+    // Add navigation or other logic here
+  };
+
+  const handleVerifiedBoxClick = () => {
+    console.log("Blockchain Verified Sellers Box clicked");
+    // Add navigation or other logic here
+  };
+
   return (
     <div className="landing-page">
       {/* Top Navbar */}
@@ -25,11 +40,14 @@ const LandingPage = () => {
           <span className="logo">LocalMart</span>
         </div>
         <div className="navbar-center">
-          <input
-            type="text"
-            className="search-bar"
-            placeholder="Search products, shops..."
-          />
+          <div className="search-bar-container">
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Search products, shops..."
+            />
+          </div>
         </div>
         <div className="navbar-right">
           <button className="auth-btn">Login | Sign Up</button>
@@ -50,29 +68,33 @@ const LandingPage = () => {
       </div>
 
       {/* Welcome Box */}
-      <div className="welcome-box">
+      <button className="welcome-box" onClick={handleWelcomeBoxClick}>
         <span className="emoji">👋</span>
         <h2>Welcome to LocalMart</h2>
         <p>
           Find nearby shops with real-time info. Visit only verified and trusted
           stores.
         </p>
-      </div>
+      </button>
 
       {/* Blockchain Verified Sellers Box */}
-      <div className="verified-box">
+      <button className="verified-box" onClick={handleVerifiedBoxClick}>
         <span className="emoji">✅</span>
         <h3>Blockchain Verified Sellers</h3>
         <p>
           Our verification process ensures all sellers with ✅ badge are
           blockchain authenticated.
         </p>
-      </div>
+      </button>
 
       {/* Product Grid */}
       <div className="product-grid">
         {filteredProducts.map((product) => (
-          <div key={product.id} className="product-card">
+          <button
+            key={product.id}
+            className="product-card"
+            onClick={() => handleProductClick(product.id)}
+          >
             <div className="product-image">
               <img
                 src={`https://via.placeholder.com/150?text=${product.name}`}
@@ -85,7 +107,7 @@ const LandingPage = () => {
               <p>{product.shop}</p>
               {product.verified && <span className="verified-badge">✔ Verified</span>}
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>
