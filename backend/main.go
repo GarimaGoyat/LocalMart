@@ -29,9 +29,13 @@ type Product struct {
 	Location  string `json:"location,omitempty"`
 }
 
+// Update your Credentials struct to include shop owner details
 type Credentials struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	ShopName string `json:"shopName,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Role     string `json:"role,omitempty"`
 }
 
 type Claims struct {
@@ -49,7 +53,7 @@ var requestedItems = []Product{}
 
 func initializeDatabase() error {
 	// Connect to MySQL server (without database)
-	rootDB, err := sql.Open("mysql", "root:Ggoyat@15@tcp(127.0.0.1:3306)/")
+	rootDB, err := sql.Open("mysql", "root:Vaidik@2005@tcp(127.0.0.1:3306)/")
 	if err != nil {
 		return err
 	}
@@ -74,7 +78,15 @@ func initializeDatabase() error {
             role_id INT NOT NULL,
             FOREIGN KEY (role_id) REFERENCES roles(id)
         )`,
-		`INSERT IGNORE INTO roles (id, name) VALUES (1, 'admin'), (2, 'user')`,
+		`CREATE TABLE IF NOT EXISTS shops (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            shop_name VARCHAR(100) NOT NULL,
+            email VARCHAR(100) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )`,
+		`INSERT IGNORE INTO roles (id, name) VALUES (1, 'admin'), (2, 'user'), (3, 'shop_owner')`,
 		`INSERT IGNORE INTO users (username, password, role_id) 
          VALUES ('admin1', 'admin_password', 1), ('user1', 'user_password', 2)
          ON DUPLICATE KEY UPDATE username=username`,
@@ -93,7 +105,7 @@ func initializeDatabase() error {
 func main() {
 	// Get DB credentials from env or use defaults
 	dbUser := getEnv("DB_USER", "root")
-	dbPass := getEnv("DB_PASS", "Ggoyat@15")
+	dbPass := getEnv("DB_PASS", "Vaidik@2005")
 	dbHost := getEnv("DB_HOST", "127.0.0.1")
 	dbPort := getEnv("DB_PORT", "3306")
 	dbName := getEnv("DB_NAME", "LocalMart")
@@ -288,11 +300,43 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 	// In production, hash the password with bcrypt here
 
-	// Insert new user (regular user role = 2)
-	_, err = db.Exec("INSERT INTO users (username, password, role_id) VALUES (?, ?, 2)",
-		creds.Username, creds.Password)
+	// Start a transaction to ensure both user and shop records are created
+	tx, err := db.Begin()
 	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	// Default role is user (2) unless specified
+	roleID := 2
+	if creds.Role == "shop_owner" {
+		roleID = 3
+	}
+
+	// Insert new user
+	result, err := tx.Exec("INSERT INTO users (username, password, role_id) VALUES (?, ?, ?)",
+		creds.Username, creds.Password, roleID)
+	if err != nil {
+		tx.Rollback()
 		http.Error(w, "Failed to create user", http.StatusInternalServerError)
+		return
+	}
+
+	// If this is a shop owner, store shop details
+	if roleID == 3 && creds.ShopName != "" {
+		userID, _ := result.LastInsertId()
+		_, err = tx.Exec("INSERT INTO shops (user_id, shop_name, email) VALUES (?, ?, ?)",
+			userID, creds.ShopName, creds.Email)
+		if err != nil {
+			tx.Rollback()
+			http.Error(w, "Failed to create shop", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// Commit the transaction
+	if err := tx.Commit(); err != nil {
+		http.Error(w, "Transaction error", http.StatusInternalServerError)
 		return
 	}
 
