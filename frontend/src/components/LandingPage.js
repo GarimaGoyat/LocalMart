@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./LandingPage.css";
 
 const LandingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const products = [
     { id: 1, name: "Campus T-Shirt", price: "₹0", shop: "Campus Store", verified: true, category: "Clothing" },
@@ -49,6 +51,10 @@ const LandingPage = () => {
     // Add navigation or other logic here
   };
 
+  const handleLoginClick = () => {
+    navigate("/signup");
+  };
+
   return (
     <div className="landing-page">
       {/* Top Navbar */}
@@ -69,7 +75,9 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="navbar-right">
-          <button className="auth-btn">Login | Sign Up</button>
+          <button className="auth-btn" onClick={handleLoginClick}>
+            Login | Sign Up
+          </button>
         </div>
       </nav>
 
