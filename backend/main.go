@@ -27,6 +27,9 @@ type Product struct {
 	Shop      string `json:"shop"`
 	OnBlinkit bool   `json:"onBlinkit"`
 	Location  string `json:"location,omitempty"`
+	Category  string `json:"category,omitempty"`
+	Quantity  int    `json:"quantity,omitempty"`
+	Image     string `json:"image,omitempty"`
 }
 
 // Update your Credentials struct to include shop owner details
@@ -85,6 +88,16 @@ func initializeDatabase() error {
             email VARCHAR(100) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
+        )`,
+		`CREATE TABLE IF NOT EXISTS products (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            category VARCHAR(100),
+            price VARCHAR(50) NOT NULL,
+            quantity INT,
+            image_url VARCHAR(255),
+            shopkeeper_username VARCHAR(50) NOT NULL,
+            FOREIGN KEY (shopkeeper_username) REFERENCES users(username)
         )`,
 		`INSERT IGNORE INTO roles (id, name) VALUES (1, 'admin'), (2, 'user'), (3, 'shop_owner')`,
 		`INSERT IGNORE INTO users (username, password, role_id) 
@@ -147,6 +160,7 @@ func main() {
 	api.HandleFunc("/shopkeeper-products", getShopkeeperProducts).Methods("GET")
 	api.HandleFunc("/shopkeeper/products", getShopkeeperProducts).Methods("GET")
 	api.HandleFunc("/shopkeeper/add-product", addNewProduct).Methods("POST")
+	api.HandleFunc("/products", getAllProducts).Methods("GET")
 
 	// Blockchain endpoints
 	api.HandleFunc("/blockchain", getBlockchain).Methods("GET")
@@ -420,16 +434,38 @@ func addNewProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Add product to blockchain
-	bc.AddBlock(blockchain.Product{
-		ID:        newProduct.ID,
-		Name:      newProduct.Name,
-		Price:     newProduct.Price,
-		Shop:      claims.Username, // Use the shopkeeper's username as the shop identifier
-		OnBlinkit: newProduct.OnBlinkit,
-		Location:  newProduct.Location,
-	})
+	// Insert the product into the database
+	_, err = db.Exec(
+		"INSERT INTO products (name, category, price, quantity, image_url, shopkeeper_username) VALUES (?, ?, ?, ?, ?, ?)",
+		newProduct.Name, newProduct.Category, newProduct.Price, newProduct.Quantity, newProduct.Image, claims.Username,
+	)
+	if err != nil {
+		http.Error(w, "Failed to add product", http.StatusInternalServerError)
+		return
+	}
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Product added successfully"})
+}
+
+func getAllProducts(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT id, name, category, price, quantity, image_url, shopkeeper_username FROM products")
+	if err != nil {
+		http.Error(w, "Failed to fetch products", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var products []Product
+	for rows.Next() {
+		var product Product
+		if err := rows.Scan(&product.ID, &product.Name, &product.Category, &product.Price, &product.Quantity, &product.Image, &product.Shop); err != nil {
+			http.Error(w, "Failed to parse products", http.StatusInternalServerError)
+			return
+		}
+		products = append(products, product)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(products)
 }

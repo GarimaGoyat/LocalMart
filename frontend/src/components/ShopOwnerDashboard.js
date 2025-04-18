@@ -12,8 +12,8 @@ const ShopOwnerDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("/api/shopkeeper/products", {
-          withCredentials: true, // Include cookies for authentication
+        const response = await axios.get("/api/products", {
+          withCredentials: true,
         });
         setProducts(response.data);
       } catch (error) {

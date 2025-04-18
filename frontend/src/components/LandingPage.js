@@ -1,30 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import axios from "axios"; // Import axios for API calls
 import "./LandingPage.css";
 
 const LandingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate(); // Initialize navigate
 
-  const products = [
-    { id: 1, name: "Campus T-Shirt", price: "₹0", shop: "Campus Store", verified: true, category: "Clothing" },
-    { id: 2, name: "Special Chai Mix", price: "₹150", shop: "Canteen", verified: false, category: "Food" },
-    { id: 3, name: "Wireless Mouse", price: "₹500", shop: "Electronics Hub", verified: true, category: "Electronics" },
-    { id: 4, name: "Organic Vegetables", price: "₹200", shop: "Farmers Market", verified: false, category: "Farmers" },
-    { id: 5, name: "Notebook", price: "₹50", shop: "Stationery World", verified: true, category: "Stationery" },
-    { id: 6, name: "Bluetooth Speaker", price: "₹1200", shop: "Electronics Hub", verified: true, category: "Electronics" },
-    { id: 7, name: "Handmade Pottery", price: "₹300", shop: "Artisan Crafts", verified: false, category: "Home Decor" },
-    { id: 8, name: "Leather Wallet", price: "₹800", shop: "Accessories Store", verified: true, category: "Accessories" },
-    { id: 9, name: "Sports Shoes", price: "₹2500", shop: "Sports World", verified: true, category: "Clothing" },
-    { id: 10, name: "Organic Honey", price: "₹400", shop: "Farmers Market", verified: false, category: "Food" },
-    { id: 11, name: "Desk Lamp", price: "₹700", shop: "Home Essentials", verified: true, category: "Home Decor" },
-    { id: 12, name: "Drawing Kit", price: "₹350", shop: "Stationery World", verified: true, category: "Stationery" },
-    { id: 13, name: "Gaming Keyboard", price: "₹2500", shop: "Electronics Hub", verified: true, category: "Electronics" },
-    { id: 14, name: "Travel Backpack", price: "₹1500", shop: "Accessories Store", verified: true, category: "Accessories" },
-  ];
-
   const categories = ["All", "Food", "Electronics", "Farmers", "Clothing", "Stationery", "Home Decor", "Accessories"];
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("/api/products");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
@@ -121,15 +119,15 @@ const LandingPage = () => {
           >
             <div className="product-image">
               <img
-                src={`https://via.placeholder.com/150?text=${product.name}`}
+                src={product.image || "https://via.placeholder.com/150"}
                 alt={product.name}
               />
             </div>
             <div className="product-info">
               <h3>{product.name}</h3>
-              <p>{product.price}</p>
-              <p>{product.shop}</p>
-              {product.verified && <span className="verified-badge">✔ Verified</span>}
+              <p>Price: ${product.price}</p>
+              <p>Category: {product.category}</p>
+              <p>Quantity: {product.quantity}</p>
             </div>
           </button>
         ))}
