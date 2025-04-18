@@ -128,6 +128,7 @@ const LandingPage = () => {
               <p>Price: ${product.price}</p>
               <p>Category: {product.category}</p>
               <p>Quantity: {product.quantity}</p>
+              <p>Shop Address: {product.shopAddress}</p> {/* Add this line */}
             </div>
           </button>
         ))}

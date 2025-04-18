@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ShopDetails from "./ShopDetails"; // Import ShopDetails component
 import "./ShopOwnerDashboard.css";
 
 const ShopOwnerDashboard = () => {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("products");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,11 +46,17 @@ const ShopOwnerDashboard = () => {
       <div className="sidebar">
         <div className="logo">LocalMart</div>
         <ul className="menu">
-          <li className="menu-item active">
+          <li
+            className={`menu-item ${activeTab === "products" ? "active" : ""}`}
+            onClick={() => setActiveTab("products")}
+          >
             <span className="icon">📦</span>
             <span className="text">Products</span>
           </li>
-          <li className="menu-item">
+          <li
+            className={`menu-item ${activeTab === "shopDetails" ? "active" : ""}`}
+            onClick={() => setActiveTab("shopDetails")}
+          >
             <span className="icon">🏪</span>
             <span className="text">Shop Details</span>
           </li>
@@ -65,69 +73,74 @@ const ShopOwnerDashboard = () => {
 
       {/* Main Content */}
       <div className="main-content">
-        <div className="top-bar">
-          <span className="greeting">Hello, ShopOwner</span>
-        </div>
+        {activeTab === "products" && (
+          <>
+            <div className="top-bar">
+              <span className="greeting">Hello, ShopOwner</span>
+            </div>
 
-        {/* Dashboard Header */}
-        <div className="dashboard-header">
-          <h2>Your Products</h2>
-          <button
-            className="add-product-btn"
-            onClick={() => navigate("/add-product")}
-          >
-            + Add Product
-          </button>
-        </div>
+            {/* Dashboard Header */}
+            <div className="dashboard-header">
+              <h2>Your Products</h2>
+              <button
+                className="add-product-btn"
+                onClick={() => navigate("/add-product")}
+              >
+                + Add Product
+              </button>
+            </div>
 
-        {/* Search Bar */}
-        <div className="search-bar-container">
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            className="search-bar"
-            placeholder="Search your products..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-        </div>
+            {/* Search Bar */}
+            <div className="search-bar-container">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                className="search-bar"
+                placeholder="Search your products..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+            </div>
 
-        {/* Product Table */}
-        <table className="product-table">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Product Name</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProducts.map((product) => (
-              <tr key={product.id}>
-                <td>
-                  <img
-                    src={product.image || "https://via.placeholder.com/50"}
-                    alt={product.name}
-                    className="product-image"
-                  />
-                </td>
-                <td>{product.name}</td>
-                <td>{product.category}</td>
-                <td>{product.price}</td>
-                <td>{product.quantity}</td>
-                <td>
-                  <div className="action-buttons">
-                    <button className="icon-button">✏️</button>
-                    <button className="icon-button">🗑️</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            {/* Product Table */}
+            <table className="product-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProducts.map((product) => (
+                  <tr key={product.id}>
+                    <td>
+                      <img
+                        src={product.image || "https://via.placeholder.com/50"}
+                        alt={product.name}
+                        className="product-image"
+                      />
+                    </td>
+                    <td>{product.name}</td>
+                    <td>{product.category}</td>
+                    <td>{product.price}</td>
+                    <td>{product.quantity}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button className="icon-button">✏️</button>
+                        <button className="icon-button">🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+        {activeTab === "shopDetails" && <ShopDetails />}
       </div>
     </div>
   );

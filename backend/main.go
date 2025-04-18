@@ -162,6 +162,10 @@ func main() {
 	api.HandleFunc("/shopkeeper/add-product", addNewProduct).Methods("POST")
 	api.HandleFunc("/products", getAllProducts).Methods("GET")
 
+	// Shop endpoints
+	api.HandleFunc("/shop/details", getShopDetails).Methods("GET")
+	api.HandleFunc("/shop/details", updateShopDetails).Methods("PUT")
+
 	// Blockchain endpoints
 	api.HandleFunc("/blockchain", getBlockchain).Methods("GET")
 
@@ -468,4 +472,79 @@ func getAllProducts(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(products)
+}
+
+// Add this function to handle fetching shop details
+func getShopDetails(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(cookie.Value, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil || !token.Valid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var shop struct {
+		ShopName string `json:"shopName"`
+		Email    string `json:"email"`
+		Phone    string `json:"phone"`
+		Address  string `json:"address"`
+		LogoURL  string `json:"logoUrl"`
+	}
+
+	err = db.QueryRow("SELECT shop_name, email, phone, address, logo_url FROM shops WHERE user_id = (SELECT id FROM users WHERE username = ?)", claims.Username).Scan(&shop.ShopName, &shop.Email, &shop.Phone, &shop.Address, &shop.LogoURL)
+	if err != nil {
+		http.Error(w, "Failed to fetch shop details", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(shop)
+}
+
+// Add this function to handle updating shop details
+func updateShopDetails(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(cookie.Value, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil || !token.Valid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var shop struct {
+		ShopName string `json:"shopName"`
+		Email    string `json:"email"`
+		Phone    string `json:"phone"`
+		Address  string `json:"address"`
+		LogoURL  string `json:"logoUrl"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&shop); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	_, err = db.Exec("UPDATE shops SET shop_name = ?, email = ?, phone = ?, address = ?, logo_url = ? WHERE user_id = (SELECT id FROM users WHERE username = ?)", shop.ShopName, shop.Email, shop.Phone, shop.Address, shop.LogoURL, claims.Username)
+	if err != nil {
+		http.Error(w, "Failed to update shop details", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Shop details updated successfully"})
 }
