@@ -1,9 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './components/LoginPage'; // Import the LoginPage component
-import ShopOwnerSignUp from './components/ShopOwnerSignUp'; // Import the ShopOwnerSignUp component
-import ShopOwnerDashboard from './components/ShopOwnerDashboard'; // Import the ShopOwnerDashboard component
-import LandingPage from './components/LandingPage'; // Import the LandingPage component
+import LoginPage from './components/LoginPage'; // Ensure this file exists
+import ShopOwnerSignUp from './components/ShopOwnerSignUp'; // Ensure this file exists
+import ShopOwnerDashboard from './components/ShopOwnerDashboard'; // Ensure this file exists
+import LandingPage from './components/LandingPage'; // Ensure this file exists
+import AddProductPage from './components/AddProductPage'; // Add this import for the Add Product page
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
         <Route path="/dashboard" element={<ShopOwnerDashboard />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<ShopOwnerSignUp />} />
+        <Route path="/add-product" element={<AddProductPage />} /> {/* Add this route */}
       </Routes>
     </Router>
   );

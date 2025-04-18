@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./ShopOwnerDashboard.css";
 
@@ -6,6 +7,7 @@ const ShopOwnerDashboard = () => {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -70,7 +72,12 @@ const ShopOwnerDashboard = () => {
         {/* Dashboard Header */}
         <div className="dashboard-header">
           <h2>Your Products</h2>
-          <button className="add-product-btn">+ Add Product</button>
+          <button
+            className="add-product-btn"
+            onClick={() => navigate("/add-product")}
+          >
+            + Add Product
+          </button>
         </div>
 
         {/* Search Bar */}
@@ -91,7 +98,7 @@ const ShopOwnerDashboard = () => {
             <tr>
               <th>Image</th>
               <th>Product Name</th>
-              <th>Type</th>
+              <th>Category</th>
               <th>Price</th>
               <th>Quantity</th>
               <th>Actions</th>
@@ -101,10 +108,14 @@ const ShopOwnerDashboard = () => {
             {filteredProducts.map((product) => (
               <tr key={product.id}>
                 <td>
-                  <div className="product-image">📷</div>
+                  <img
+                    src={product.image || "https://via.placeholder.com/50"}
+                    alt={product.name}
+                    className="product-image"
+                  />
                 </td>
                 <td>{product.name}</td>
-                <td>{product.type}</td>
+                <td>{product.category}</td>
                 <td>{product.price}</td>
                 <td>{product.quantity}</td>
                 <td>

@@ -146,6 +146,7 @@ func main() {
 	api.HandleFunc("/products", addProduct).Methods("POST")
 	api.HandleFunc("/shopkeeper-products", getShopkeeperProducts).Methods("GET")
 	api.HandleFunc("/shopkeeper/products", getShopkeeperProducts).Methods("GET")
+	api.HandleFunc("/shopkeeper/add-product", addNewProduct).Methods("POST")
 
 	// Blockchain endpoints
 	api.HandleFunc("/blockchain", getBlockchain).Methods("GET")
@@ -395,4 +396,40 @@ func getShopkeeperProducts(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(shopProducts)
+}
+
+func addNewProduct(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(cookie.Value, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil || !token.Valid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var newProduct Product
+	if err := json.NewDecoder(r.Body).Decode(&newProduct); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Add product to blockchain
+	bc.AddBlock(blockchain.Product{
+		ID:        newProduct.ID,
+		Name:      newProduct.Name,
+		Price:     newProduct.Price,
+		Shop:      claims.Username, // Use the shopkeeper's username as the shop identifier
+		OnBlinkit: newProduct.OnBlinkit,
+		Location:  newProduct.Location,
+	})
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Product added successfully"})
 }
