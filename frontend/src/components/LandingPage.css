@@ -35,7 +35,8 @@ body {
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 400px;
+  max-width: 800px; /* Increased the max-width to make the search bar longer */
+  margin: 20px auto; /* Center the search bar */
 }
 
 /* Search Icon */
@@ -50,10 +51,10 @@ body {
 /* Search Bar */
 .search-bar {
   width: 100%;
-  padding: 10px 10px 10px 30px; /* Add left padding to make space for the icon */
+  padding: 10px 10px 10px 30px; /* Add left padding for the search icon */
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 16px;
   outline: none;
   transition: border-color 0.3s;
 }

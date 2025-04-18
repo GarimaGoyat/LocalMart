@@ -102,10 +102,10 @@ const LandingPage = () => {
       {/* Blockchain Verified Sellers Box */}
       <button className="verified-box" onClick={handleVerifiedBoxClick}>
         <span className="emoji">✅</span>
-        <h3>Blockchain Verified Sellers</h3>
+        <h3>Verified Sellers</h3> {/* Updated text */}
         <p>
           Our verification process ensures all sellers with ✅ badge are
-          blockchain authenticated.
+          authenticated and approved by the admin.
         </p>
       </button>
 

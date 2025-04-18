@@ -5,6 +5,7 @@ import ShopOwnerSignUp from './components/ShopOwnerSignUp'; // Ensure this file 
 import ShopOwnerDashboard from './components/ShopOwnerDashboard'; // Ensure this file exists
 import LandingPage from './components/LandingPage'; // Ensure this file exists
 import AddProductPage from './components/AddProductPage'; // Add this import for the Add Product page
+import VerificationRequestPage from './components/VerificationRequestPage'; // Add this import for the Verification Request page
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<ShopOwnerSignUp />} />
         <Route path="/add-product" element={<AddProductPage />} /> {/* Add this route */}
+        <Route path="/request-verification" element={<VerificationRequestPage />} /> {/* Add this route */}
       </Routes>
     </Router>
   );

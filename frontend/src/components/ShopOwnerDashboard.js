@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ShopDetails from "./ShopDetails"; // Import ShopDetails component
+import VerificationRequest from "./VerificationRequest"; // Import the VerificationRequest component
 import "./ShopOwnerDashboard.css";
 
 const ShopOwnerDashboard = () => {
@@ -9,6 +10,7 @@ const ShopOwnerDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("products");
+  const [showVerificationForm, setShowVerificationForm] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +29,25 @@ const ShopOwnerDashboard = () => {
 
     fetchProducts();
   }, []);
+
+  const handleEditProduct = (productId) => {
+    navigate(`/add-product?id=${productId}`); // Navigate to Add Product page with product ID
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        await axios.delete(`/api/products/delete?id=${productId}`, {
+          withCredentials: true,
+        });
+        setProducts(products.filter((product) => product.id !== productId)); // Remove the deleted product from the list
+        alert("Product deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting product:", error);
+        alert("Failed to delete product. Please try again.");
+      }
+    }
+  };
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -60,7 +81,10 @@ const ShopOwnerDashboard = () => {
             <span className="icon">🏪</span>
             <span className="text">Shop Details</span>
           </li>
-          <li className="menu-item">
+          <li
+            className="menu-item"
+            onClick={() => navigate("/request-verification")} // Navigate to the new page
+          >
             <span className="icon">✅</span>
             <span className="text">Request Verification</span>
           </li>
@@ -106,8 +130,7 @@ const ShopOwnerDashboard = () => {
             <table className="product-table">
               <thead>
                 <tr>
-                  <th>Image</th>
-                  <th>Product Name</th>
+                  <th>Name</th>
                   <th>Category</th>
                   <th>Price</th>
                   <th>Quantity</th>
@@ -117,21 +140,24 @@ const ShopOwnerDashboard = () => {
               <tbody>
                 {filteredProducts.map((product) => (
                   <tr key={product.id}>
-                    <td>
-                      <img
-                        src={product.image || "https://via.placeholder.com/50"}
-                        alt={product.name}
-                        className="product-image"
-                      />
-                    </td>
                     <td>{product.name}</td>
                     <td>{product.category}</td>
-                    <td>{product.price}</td>
+                    <td>${product.price}</td>
                     <td>{product.quantity}</td>
                     <td>
                       <div className="action-buttons">
-                        <button className="icon-button">✏️</button>
-                        <button className="icon-button">🗑️</button>
+                        <button
+                          className="icon-button"
+                          onClick={() => handleEditProduct(product.id)} // Pencil icon handler
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          className="icon-button"
+                          onClick={() => handleDeleteProduct(product.id)} // Dustbin icon handler
+                        >
+                          🗑️
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -141,6 +167,9 @@ const ShopOwnerDashboard = () => {
           </>
         )}
         {activeTab === "shopDetails" && <ShopDetails />}
+        {showVerificationForm && (
+          <VerificationRequest onClose={() => setShowVerificationForm(false)} />
+        )}
       </div>
     </div>
   );

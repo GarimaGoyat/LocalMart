@@ -99,6 +99,16 @@ func initializeDatabase() error {
             shopkeeper_username VARCHAR(50) NOT NULL,
             FOREIGN KEY (shopkeeper_username) REFERENCES users(username)
         )`,
+		`CREATE TABLE IF NOT EXISTS verification_requests (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            shopkeeper_username VARCHAR(50) NOT NULL,
+            business_name VARCHAR(100) NOT NULL,
+            address VARCHAR(255) NOT NULL,
+            document_url VARCHAR(255) NOT NULL,
+            status VARCHAR(50) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (shopkeeper_username) REFERENCES users(username)
+        )`,
 		`INSERT IGNORE INTO roles (id, name) VALUES (1, 'admin'), (2, 'user'), (3, 'shop_owner')`,
 		`INSERT IGNORE INTO users (username, password, role_id) 
          VALUES ('admin1', 'admin_password', 1), ('user1', 'user_password', 2)
@@ -161,6 +171,13 @@ func main() {
 	api.HandleFunc("/shopkeeper/products", getShopkeeperProducts).Methods("GET")
 	api.HandleFunc("/shopkeeper/add-product", addNewProduct).Methods("POST")
 	api.HandleFunc("/products", getAllProducts).Methods("GET")
+	api.HandleFunc("/product", getProductByID).Methods("GET")
+	api.HandleFunc("/products/{id}", getProductByID).Methods("GET")
+	api.HandleFunc("/products/{id}", getProductByID).Methods("GET")
+	api.HandleFunc("/products/{id}", getProductByID).Methods("GET")
+	api.HandleFunc("/products/{id}", getProductByID).Methods("GET")
+	api.HandleFunc("/products/{id}", deleteProduct).Methods("DELETE")
+	api.HandleFunc("/products/delete", deleteProduct).Methods("DELETE")
 
 	// Shop endpoints
 	api.HandleFunc("/shop/details", getShopDetails).Methods("GET")
@@ -168,6 +185,9 @@ func main() {
 
 	// Blockchain endpoints
 	api.HandleFunc("/blockchain", getBlockchain).Methods("GET")
+
+	// Verification request endpoint
+	api.HandleFunc("/verification/request", requestVerification).Methods("POST")
 
 	fmt.Println("Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
@@ -547,4 +567,89 @@ func updateShopDetails(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Shop details updated successfully"})
+}
+
+func getProductByID(w http.ResponseWriter, r *http.Request) {
+	productID := r.URL.Query().Get("id")
+	if productID == "" {
+		http.Error(w, "Product ID is required", http.StatusBadRequest)
+		return
+	}
+
+	var product struct {
+		ID       int     `json:"id"`
+		Name     string  `json:"name"`
+		Category string  `json:"category"`
+		Price    float64 `json:"price"`
+		Quantity int     `json:"quantity"`
+		Image    string  `json:"image"`
+	}
+
+	err := db.QueryRow("SELECT id, name, category, price, quantity, image_url FROM products WHERE id = ?", productID).Scan(
+		&product.ID, &product.Name, &product.Category, &product.Price, &product.Quantity, &product.Image,
+	)
+	if err != nil {
+		http.Error(w, "Product not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(product)
+}
+
+func deleteProduct(w http.ResponseWriter, r *http.Request) {
+	productID := r.URL.Query().Get("id")
+	if productID == "" {
+		http.Error(w, "Product ID is required", http.StatusBadRequest)
+		return
+	}
+
+	_, err := db.Exec("DELETE FROM products WHERE id = ?", productID)
+	if err != nil {
+		http.Error(w, "Failed to delete product", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Product deleted successfully"})
+}
+
+func requestVerification(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(cookie.Value, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil || !token.Valid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var request struct {
+		BusinessName string `json:"businessName"`
+		Address      string `json:"address"`
+		DocumentURL  string `json:"documentUrl"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	_, err = db.Exec(
+		"INSERT INTO verification_requests (shopkeeper_username, business_name, address, document_url, status) VALUES (?, ?, ?, ?, ?)",
+		claims.Username, request.BusinessName, request.Address, request.DocumentURL, "Pending",
+	)
+	if err != nil {
+		http.Error(w, "Failed to submit verification request", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Verification request submitted successfully"})
 }
