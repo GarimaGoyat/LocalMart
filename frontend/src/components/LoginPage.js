@@ -1,9 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./loginPage.css";
 
-
 const LoginPage = () => {
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("/login", credentials, { withCredentials: true });
+      navigate("/dashboard"); // Redirect to dashboard
+    } catch (err) {
+      setError("Invalid username or password");
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="login-header">
@@ -11,24 +29,34 @@ const LoginPage = () => {
       </div>
       <div className="login-box">
         <h2>Shop Owner Login</h2>
-        <form>
+        {error && <div className="error-message">{error}</div>}
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Username or Email</label>
-            <input type="text" placeholder="Enter your username or email" />
+            <input
+              type="text"
+              name="username"
+              placeholder="Enter your username or email"
+              value={credentials.username}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input type="password" placeholder="Enter your password" />
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={credentials.password}
+              onChange={handleChange}
+              required
+            />
           </div>
-          <div className="form-footer">
-            <Link to="/forgot-password">Forgot Password?</Link>
-          </div>
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-button">
+            Login
+          </button>
         </form>
-        <div className="signup-link">
-          <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
-          <p>Admin? <Link to="/admin-login">Admin Login</Link></p>
-        </div>
       </div>
     </div>
   );

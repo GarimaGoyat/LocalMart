@@ -1,21 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./ShopOwnerDashboard.css";
 
 const ShopOwnerDashboard = () => {
+  const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const products = [
-    { id: 1, name: "Campus T-Shirt", price: "₹500", type: "Clothing", quantity: 20 },
-    { id: 2, name: "Special Chai Mix", price: "₹150", type: "Food", quantity: 50 },
-    { id: 3, name: "Wireless Mouse", price: "₹800", type: "Electronics", quantity: 15 },
-    { id: 4, name: "Organic Vegetables", price: "₹200", type: "Farmers", quantity: 30 },
-    { id: 5, name: "Notebook", price: "₹50", type: "Stationery", quantity: 100 },
-    { id: 6, name: "Bluetooth Speaker", price: "₹1200", type: "Electronics", quantity: 10 },
-    { id: 7, name: "Handmade Pottery", price: "₹300", type: "Home Decor", quantity: 25 },
-    { id: 8, name: "Leather Wallet", price: "₹800", type: "Accessories", quantity: 40 },
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("/api/shopkeeper/products", {
+          withCredentials: true, // Include cookies for authentication
+        });
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Filter products based on the search query
+    fetchProducts();
+  }, []);
+
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -23,6 +31,10 @@ const ShopOwnerDashboard = () => {
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="dashboard-container">
@@ -57,7 +69,7 @@ const ShopOwnerDashboard = () => {
 
         {/* Dashboard Header */}
         <div className="dashboard-header">
-          <h2>Products</h2>
+          <h2>Your Products</h2>
           <button className="add-product-btn">+ Add Product</button>
         </div>
 

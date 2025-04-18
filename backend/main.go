@@ -53,7 +53,7 @@ var requestedItems = []Product{}
 
 func initializeDatabase() error {
 	// Connect to MySQL server (without database)
-	rootDB, err := sql.Open("mysql", "root:Vaidik@2005@tcp(127.0.0.1:3306)/")
+	rootDB, err := sql.Open("mysql", "root:Ggoyat@15@tcp(127.0.0.1:3306)/")
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func initializeDatabase() error {
 func main() {
 	// Get DB credentials from env or use defaults
 	dbUser := getEnv("DB_USER", "root")
-	dbPass := getEnv("DB_PASS", "Vaidik@2005")
+	dbPass := getEnv("DB_PASS", "Ggoyat@15")
 	dbHost := getEnv("DB_HOST", "127.0.0.1")
 	dbPort := getEnv("DB_PORT", "3306")
 	dbName := getEnv("DB_NAME", "LocalMart")
@@ -144,6 +144,8 @@ func main() {
 	// Product endpoints
 	api.HandleFunc("/products", getProducts).Methods("GET")
 	api.HandleFunc("/products", addProduct).Methods("POST")
+	api.HandleFunc("/shopkeeper-products", getShopkeeperProducts).Methods("GET")
+	api.HandleFunc("/shopkeeper/products", getShopkeeperProducts).Methods("GET")
 
 	// Blockchain endpoints
 	api.HandleFunc("/blockchain", getBlockchain).Methods("GET")
@@ -370,4 +372,27 @@ func authMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func getShopkeeperProducts(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(cookie.Value, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil || !token.Valid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Fetch products from the blockchain for the shopkeeper's shop
+	shopProducts := bc.GetProductsByShop(claims.Username)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(shopProducts)
 }
