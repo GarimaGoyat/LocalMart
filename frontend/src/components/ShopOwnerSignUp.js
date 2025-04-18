@@ -1,10 +1,11 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./ShopOwnerSignUp.css"; // Import the CSS file
 
-const ShopOwnerSignUp = () => {
+const SignUpPage = () => {
   return (
     <div className="signup-container">
-      <h2>Shop Owner Sign Up</h2>
+      <h2>Sign Up</h2>
       <form>
         <label>
           Shop Name:
@@ -30,7 +31,7 @@ const ShopOwnerSignUp = () => {
         <button type="button">Cancel</button>
       </form>
       <p>
-        Already have an account? <a href="/signin">Sign In</a>
+        Already have an account? <Link to="/login">Sign In</Link>
       </p>
       <p>
         Are you an admin? <a href="/admin-signup">Admin Sign Up</a>
@@ -39,4 +40,4 @@ const ShopOwnerSignUp = () => {
   );
 };
 
-export default ShopOwnerSignUp;
+export default SignUpPage;
