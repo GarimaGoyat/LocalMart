@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import "./LandingPage.css";
 
 const LandingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate(); // Initialize navigate
 
   const products = [
     { id: 1, name: "Campus T-Shirt", price: "₹0", shop: "Campus Store", verified: true, category: "Clothing" },
@@ -64,12 +66,15 @@ const LandingPage = () => {
               className="search-bar"
               placeholder="Search products, shops..."
               value={searchQuery}
-              onChange={handleSearchChange}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
         </div>
         <div className="navbar-right">
-          <button className="auth-btn">Login | Sign Up</button>
+          {/* Navigate to the signup page */}
+          <button className="auth-btn" onClick={() => navigate("/signup")}>
+            Login | Sign Up
+          </button>
         </div>
       </nav>
 
