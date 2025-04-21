@@ -36,6 +36,37 @@ cd frontend
 npm start
 ```
 
+# To connect db
+
+```sql
+CREATE DATABASE LocakMart;
+
+USE LocalMart;
+
+-- Create roles table
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Create users table
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role_id INT NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+-- Insert default roles
+INSERT INTO roles (name) VALUES ('admin'), ('user');
+
+-- Insert sample users
+INSERT INTO users (username, password, role_id) VALUES
+('admin1', '<hashed_password>', 1), -- Replace <hashed_password> with a hashed password
+('user1', '<hashed_password>', 2);
+```
+
 # LocalMart 🛍️
 
 This is a hackathon project that supports local campus shopkeepers by showcasing items **not available on Blinkit**, but available inside our campus.
@@ -82,36 +113,7 @@ To get started with the project locally, follow these steps:
    ```bash
    go run main.go
 
-# To connect db
 
-```sql
-CREATE DATABASE LocakMart;
-
-USE LocalMart;
-
--- Create roles table
-CREATE TABLE roles (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE
-);
-
--- Create users table
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role_id INT NOT NULL,
-    FOREIGN KEY (role_id) REFERENCES roles(id)
-);
-
--- Insert default roles
-INSERT INTO roles (name) VALUES ('admin'), ('user');
-
--- Insert sample users
-INSERT INTO users (username, password, role_id) VALUES
-('admin1', '<hashed_password>', 1), -- Replace <hashed_password> with a hashed password
-('user1', '<hashed_password>', 2);
-```
 
 ## 🌟 Features
 
