@@ -36,7 +36,7 @@ cd frontend
 npm start
 ```
 
-# Blinket Gap Filler 🛍️
+# LocalMart 🛍️
 
 This is a hackathon project that supports local campus shopkeepers by showcasing items **not available on Blinkit**, but available inside our campus.
 
@@ -82,24 +82,12 @@ To get started with the project locally, follow these steps:
    ```bash
    go run main.go
 
-## 🌟 Features
-
-- User login and homepage
-- Listings of campus-only items
-- Basic inventory and comparison with Blinkit
-
-## 🚧 Future Scope
-
-- Admin portal for shopkeepers
-- Real-time inventory sync
-- Mobile-friendly UI and delivery tracking
-
 # To connect db
 
 ```sql
-CREATE DATABASE blinket_gap_filler;
+CREATE DATABASE LocakMart;
 
-USE blinket_gap_filler;
+USE LocalMart;
 
 -- Create roles table
 CREATE TABLE roles (
@@ -124,3 +112,16 @@ INSERT INTO users (username, password, role_id) VALUES
 ('admin1', '<hashed_password>', 1), -- Replace <hashed_password> with a hashed password
 ('user1', '<hashed_password>', 2);
 ```
+
+## 🌟 Features
+
+- User login and homepage
+- Listings of campus-only items
+- Basic inventory and comparison with Blinkit
+
+## 🚧 Future Scope
+
+- Admin portal for shopkeepers
+- Real-time inventory sync
+- Mobile-friendly UI and delivery tracking
+
